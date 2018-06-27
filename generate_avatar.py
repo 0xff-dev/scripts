@@ -45,8 +45,8 @@ class GenerateImage(object):
             self.hash >>= 1
             y += 1
             if y == GRID_SIZE:
-                    y = 0
-                    x+=1
+                y = 0
+                x+=1
     
     def get_image(self):
         self.image_data()
@@ -55,7 +55,7 @@ class GenerateImage(object):
 
 
 if __name__ == '__main__':
-    for index in range(1, 37):
+    for index in range(1, 2):
         image = GenerateImage('1504052{}'.format(index))
         image.get_image()
 
