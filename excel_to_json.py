@@ -41,4 +41,4 @@ def read_file(file_path):
     else:
          res = list(map(lambda x: {"name": x}, names[0]))
     print(json.dumps(res, ensure_ascii=False))
-read_file('data.xlsx')
+read_file('/home/zs/data.xlsx')
