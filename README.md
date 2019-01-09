@@ -43,3 +43,13 @@
 
 ### 目标格式
 ![excelToJson](./images/data_json.png)
+
+
+# runner.go 说明
+> 通过通道监控程序的执行时间. 应用哎corn, 或者定时任务的云环境.
+
+# pool.go说明
+> 模拟连接池, 使用mutex(互斥锁进行数据同步), resources是实现了Close接口的类型, 列入dbConnnect, PoolNew作为开放的工厂函数,   
+> Acquire在资源中获取一个资源去使用, 如果不存在资源, 那么就用工厂函数factory进行创建. Release是放资源, 把资源放回到resources,  
+> Close关闭池子, Release, Close使用额互斥锁, 保证数据closed的同步, 不能某个goroutine关闭池, 
+> 而其他的goroutine还在向resources写入数据
