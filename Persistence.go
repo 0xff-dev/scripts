@@ -1,11 +1,11 @@
 package main
 
 import (
-    "bytes"
+	"bytes"
 	"encoding/csv"
-    "encoding/gob"
+	"encoding/gob"
 	"fmt"
-    "io/ioutil"
+	"io/ioutil"
 	"os"
 	"strconv"
 )
@@ -17,27 +17,27 @@ type Post struct {
 }
 
 func useGob(data interface{}, filename string) {
-    buffer := new(bytes.Buffer)
-    encoder := gob.NewEncoder(buffer)
-    err := encoder.Encode(data)
-    if err != nil {
-        panic(err)
-    }
-    err = ioutil.WriteFile(filename, buffer.Bytes(), 0660)
-    if err != nil {
-        panic(err)
-    }
+	buffer := new(bytes.Buffer)
+	encoder := gob.NewEncoder(buffer)
+	err := encoder.Encode(data)
+	if err != nil {
+		panic(err)
+	}
+	err = ioutil.WriteFile(filename, buffer.Bytes(), 0660)
+	if err != nil {
+		panic(err)
+	}
 
-    // 读取数据, 二进制
-    var res Post
-    datas, _ := ioutil.ReadFile(filename)
-    buffer = bytes.NewBuffer(datas)
-    decoder := gob.NewDecoder(buffer)
-    err = decoder.Decode(&res)
-    if err != nil {
-        panic(err)
-    }
-    fmt.Println("res: ", res)
+	// 读取数据, 二进制
+	var res Post
+	datas, _ := ioutil.ReadFile(filename)
+	buffer = bytes.NewBuffer(datas)
+	decoder := gob.NewDecoder(buffer)
+	err = decoder.Decode(&res)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("res: ", res)
 }
 
 func storeIntoCsv(posts []Post) {
@@ -54,14 +54,14 @@ func storeIntoCsv(posts []Post) {
 			panic(err)
 		}
 	}
-    csvCwriter.Flush()
+	csvCwriter.Flush()
 	file, err = os.Open("data.csv")
 	defer file.Close()
 	csvReader := csv.NewReader(file)
 	csvReader.FieldsPerRecord = -1
 	records, _ := csvReader.ReadAll()
 	for _, line := range records {
-        id, _ := strconv.ParseInt(line[0], 0, 0)
+		id, _ := strconv.ParseInt(line[0], 0, 0)
 		post := Post{
 			Id:      int(id),
 			Content: line[1],
@@ -79,5 +79,5 @@ func main() {
 		{Id: 4, Content: "Post4", Author: "Justzs"},
 	}
 	storeIntoCsv(posts)
-    useGob(Post{Id: 5, Content: "Post5", Author: "Coco"}, "testBin")
+	useGob(Post{Id: 5, Content: "Post5", Author: "Coco"}, "testBin")
 }
