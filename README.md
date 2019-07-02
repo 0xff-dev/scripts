@@ -53,3 +53,6 @@
 > Acquire在资源中获取一个资源去使用, 如果不存在资源, 那么就用工厂函数factory进行创建. Release是放资源, 把资源放回到resources,  
 > Close关闭池子, Release, Close使用额互斥锁, 保证数据closed的同步, 不能某个goroutine关闭池, 
 > 而其他的goroutine还在向resources写入数据
+
+# golang实现验证码
+![captcha](./captcha/res.jpg)
