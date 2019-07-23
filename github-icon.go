@@ -7,8 +7,9 @@ import (
 	"image/color"
 	"image/jpeg"
 	"io"
+	"math/rand"
 	"os"
-	"strconv"
+	"time"
 )
 
 // 开始的位置是{20, 20}, 结束的位置{170, 170}
@@ -25,25 +26,26 @@ const (
 type Avatar struct {
 	Img        *image.RGBA
 	Key        string
-	HashKey    uint64
+	HashKey    []byte
 	ColorModel color.Color
 }
 
 func (avatar *Avatar) genHash() {
 	h5 := md5.New()
 	io.WriteString(h5, avatar.Key)
-	avatar.HashKey, _ = strconv.ParseUint(fmt.Sprintf("%x", h5.Sum(nil)), 16, 64)
-	fmt.Println(avatar.HashKey)
+	avatar.HashKey = h5.Sum(nil)
 }
 
 // https://golang.org/pkg/image/color/
 func (avatar *Avatar) color() {
-	//rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
-	avatar.ColorModel = color.RGBA{uint8(avatar.HashKey >> 4 & 0xff),
-		uint8(avatar.HashKey >> 55 & 0xff),
-		uint8(avatar.HashKey >> 58 & 0xff),
-		uint8(avatar.HashKey >> 57 & 0xff)}
-	fmt.Println(avatar.ColorModel)
+	timeLayout, timeFmt := "2006-01-02 15:04:05", "1999-10-10 10:10:10"
+	loc, _ := time.LoadLocation("Local") //获取时区
+	_time, _ := time.ParseInLocation(timeLayout, timeFmt, loc)
+	rnd := rand.New(rand.NewSource(_time.Unix()))
+	avatar.ColorModel = color.RGBA{avatar.HashKey[rnd.Intn(16)] & 0xff,
+		avatar.HashKey[rnd.Intn(16)] & 0xff,
+		avatar.HashKey[rnd.Intn(16)] & 0xff,
+		avatar.HashKey[rnd.Intn(16)] & 0xff}
 }
 
 func (avatar *Avatar) addColor(x, y int) {
@@ -56,22 +58,17 @@ func (avatar *Avatar) addColor(x, y int) {
 
 func (avatar *Avatar) Draw(path string) {
 	avatar.Img = image.NewRGBA(image.Rectangle{image.Point{0, 0}, image.Point{width, height}})
-	// 生成本身颜色
 	avatar.genHash()
 	avatar.color()
-	avatar.HashKey >>= 16
-	// 一共是25个格子
-	x, y := 0, 0
+	x, y, key := 0, 0, 0
 	for walk := 0; walk < Size*Size; walk++ {
-		if avatar.HashKey&1 == 0 {
+		if avatar.HashKey[key]&1 == 0 {
 			walk, _y := empty+x*Gird, empty+y*Gird
 			avatar.addColor(walk, _y)
-			// 对面也要画上
 			walk = width - empty - 10 - walk
 			avatar.addColor(walk, _y)
 		}
-		avatar.HashKey >>= 3
-		y += 1
+		y, key = y+1, (key+1)%16
 		if y == Size {
 			y = 0
 			x += 1
@@ -84,6 +81,6 @@ func (avatar *Avatar) Draw(path string) {
 }
 
 func main() {
-	av := &Avatar{Key: "150405211"}
+	av := &Avatar{Key: "150405212"}
 	av.Draw("./")
 }
