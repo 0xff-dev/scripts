@@ -81,6 +81,6 @@ func (avatar *Avatar) Draw(path string) {
 }
 
 func main() {
-	av := &Avatar{Key: "150405212"}
+	av := &Avatar{Key: "150405211"}
 	av.Draw("./")
 }
